@@ -1,6 +1,6 @@
 # Core deep-learning stack.
-# For cloud GPU, install with:
-#   python -m pip install -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cu121
+# Kaggle usually preinstalls CUDA-enabled torch/torchvision. Check imports first;
+# only reinstall PyTorch if Kaggle's CUDA check fails.
 torch>=2.2
 torchvision>=0.17
 
