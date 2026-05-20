@@ -85,9 +85,11 @@ def normalize_label(raw_label):
     return CKPLUS_INT_TO_NAME.get(value, str(value))
 
 
-def label_name_to_cafe(label_name):
+def label_name_to_cafe(label_name, exclude_neutral=False):
     label_name = label_name.strip().lower()
     if label_name == "contempt":
+        return None
+    if exclude_neutral and label_name == "neutral":
         return None
     if label_name not in NAME_TO_CAFE:
         raise ValueError(f"Unsupported CK+48 label: {label_name}")
@@ -108,15 +110,18 @@ def pil_from_path(path):
 
 
 class CKPlus48Dataset(Dataset):
-    def __init__(self, root, transform):
+    def __init__(self, root, transform, exclude_neutral=False):
         self.root = Path(root)
         self.transform = transform
+        self.exclude_neutral = exclude_neutral
         self.samples = self._discover_samples()
         if not self.samples:
             raise RuntimeError(f"No usable CK+48 samples found under {self.root}")
 
         labels = sorted({sample["label"] for sample in self.samples})
-        self.mode = "CK+48-7cls-with-neutral" if 6 in labels else "CK+48-6cls"
+        self.mode = "CK+48-6cls-peak-only" if exclude_neutral else (
+            "CK+48-7cls-with-neutral" if 6 in labels else "CK+48-6cls"
+        )
         self.labels = labels
 
     def _discover_samples(self):
@@ -151,7 +156,7 @@ class CKPlus48Dataset(Dataset):
         samples = []
         for row_idx, row in df.iterrows():
             label_name = normalize_label(row[label_col])
-            cafe_label = label_name_to_cafe(label_name)
+            cafe_label = label_name_to_cafe(label_name, self.exclude_neutral)
             if cafe_label is None:
                 continue
 
@@ -177,7 +182,7 @@ class CKPlus48Dataset(Dataset):
     def _samples_from_folders(self):
         samples = []
         for class_dir in sorted(path for path in self.root.iterdir() if path.is_dir()):
-            cafe_label = label_name_to_cafe(normalize_label(class_dir.name))
+            cafe_label = label_name_to_cafe(normalize_label(class_dir.name), self.exclude_neutral)
             if cafe_label is None:
                 continue
             for image_path in sorted(class_dir.rglob("*")):
@@ -235,6 +240,11 @@ def main():
     parser.add_argument("--batch_size", type=int, default=64)
     parser.add_argument("--workers", type=int, default=2)
     parser.add_argument("--gpu", type=int, default=0)
+    parser.add_argument(
+        "--exclude_neutral",
+        action="store_true",
+        help="Evaluate CK+48 as peak-only by dropping neutral and contempt samples.",
+    )
     args = parser.parse_args()
 
     device = torch.device(f"cuda:{args.gpu}" if torch.cuda.is_available() else "cpu")
@@ -245,7 +255,7 @@ def main():
                              std=[0.229, 0.224, 0.225]),
     ])
 
-    dataset = CKPlus48Dataset(args.ck_path, transform)
+    dataset = CKPlus48Dataset(args.ck_path, transform, exclude_neutral=args.exclude_neutral)
     loader = DataLoader(dataset, batch_size=args.batch_size, shuffle=False, num_workers=args.workers)
 
     Model, clip_model = import_cafe_model()
