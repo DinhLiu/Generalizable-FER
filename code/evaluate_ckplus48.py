@@ -42,16 +42,18 @@ NAME_TO_CAFE = {
     "neutral": 6,
 }
 
-# Common CK+/CK+48 CSV label order.
+# CK+ extended CSV label order used by the Kaggle ckdataset:
+# 0 Anger, 1 Disgust, 2 Fear, 3 Happiness, 4 Sadness,
+# 5 Surprise, 6 Neutral, 7 Contempt.
 CKPLUS_INT_TO_NAME = {
     0: "anger",
-    1: "contempt",
-    2: "disgust",
-    3: "fear",
-    4: "happy",
-    5: "sadness",
-    6: "surprise",
-    7: "neutral",
+    1: "disgust",
+    2: "fear",
+    3: "happy",
+    4: "sadness",
+    5: "surprise",
+    6: "neutral",
+    7: "contempt",
 }
 
 IMAGE_SUFFIXES = {".jpg", ".jpeg", ".png", ".bmp", ".tif", ".tiff"}
