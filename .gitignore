@@ -1,0 +1,5 @@
+*.zip
+resnet18_msceleb.pth
+__pycache__
+.venv
+venv

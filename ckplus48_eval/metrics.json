@@ -1,0 +1,25 @@
+{
+  "dataset_mode": "CK+48-7cls-with-neutral",
+  "num_samples": 902,
+  "labels": [
+    "surprise",
+    "fear",
+    "disgust",
+    "happy",
+    "sadness",
+    "anger",
+    "neutral"
+  ],
+  "overall_accuracy": 0.5476718403547672,
+  "mean_accuracy": 0.1500960946492144,
+  "macro_f1": 0.14498978875655025,
+  "per_class_accuracy": {
+    "surprise": 0.0,
+    "fear": 0.12,
+    "disgust": 0.0,
+    "happy": 0.0,
+    "sadness": 0.0,
+    "anger": 0.1111111111111111,
+    "neutral": 0.8195615514333895
+  }
+}
