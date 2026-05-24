@@ -10,16 +10,16 @@
     "anger",
     "neutral"
   ],
-  "overall_accuracy": 0.5476718403547672,
-  "mean_accuracy": 0.1500960946492144,
-  "macro_f1": 0.14498978875655025,
+  "overall_accuracy": 0.8248337028824834,
+  "mean_accuracy": 0.5790145351453543,
+  "macro_f1": 0.5372975734972046,
   "per_class_accuracy": {
-    "surprise": 0.0,
-    "fear": 0.12,
-    "disgust": 0.0,
-    "happy": 0.0,
-    "sadness": 0.0,
-    "anger": 0.1111111111111111,
-    "neutral": 0.8195615514333895
+    "surprise": 0.9518072289156626,
+    "fear": 0.0,
+    "disgust": 0.559322033898305,
+    "happy": 1.0,
+    "sadness": 0.5357142857142857,
+    "anger": 0.08888888888888889,
+    "neutral": 0.9173693086003373
   }
 }

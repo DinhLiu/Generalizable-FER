@@ -9,15 +9,15 @@
     "sadness",
     "anger"
   ],
-  "overall_accuracy": 0.025889967637540454,
-  "mean_accuracy": 0.038518518518518514,
-  "macro_f1": 0.03217684462083387,
+  "overall_accuracy": 0.6472491909385113,
+  "mean_accuracy": 0.522622072902857,
+  "macro_f1": 0.5143157592391283,
   "per_class_accuracy": {
-    "surprise": 0.0,
-    "fear": 0.12,
-    "disgust": 0.0,
-    "happy": 0.0,
-    "sadness": 0.0,
-    "anger": 0.1111111111111111
+    "surprise": 0.9518072289156626,
+    "fear": 0.0,
+    "disgust": 0.559322033898305,
+    "happy": 1.0,
+    "sadness": 0.5357142857142857,
+    "anger": 0.08888888888888889
   }
 }

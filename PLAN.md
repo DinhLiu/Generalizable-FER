@@ -1,8 +1,8 @@
-# Kaggle Experiment Plan: CAFE on RAF-DB + CK+48
+# Kaggle Experiment Plan: CAFE on RAF-DB + Cross-Dataset Evaluation
 
 ## Summary
 
-- Run a report-feasible reproduction of CAFE: train on RAF-DB, save checkpoint/logs, then evaluate zero-shot on CK+48.
+- Run a report-feasible reproduction of CAFE: train on RAF-DB, save checkpoint/logs, then evaluate zero-shot on CK+48 plus the paper datasets FERPlus, AffectNet, SFEW2.0, and MMAFEDB.
 - Target environment: Kaggle Notebook with GPU enabled.
 - Kaggle path convention:
   - Working code/output: `/kaggle/working/Generalizable-FER`
@@ -27,6 +27,10 @@
    mkdir -p /kaggle/working/data /kaggle/working/outputs
    ln -s /kaggle/input/raf-db/raf-basic /kaggle/working/data/raf-basic
    ln -s /kaggle/input/ckplus48 /kaggle/working/data/ckplus48
+   ln -s /kaggle/input/ferplus /kaggle/working/data/ferplus
+   ln -s /kaggle/input/affectnet /kaggle/working/data/affectnet
+   ln -s /kaggle/input/datasetsfew /kaggle/working/data/sfew
+   ln -s /kaggle/input/mma-facial-expression /kaggle/working/data/mma
    ln -s /kaggle/input/cafe-checkpoints/resnet18_msceleb.pth /kaggle/working/resnet18_msceleb.pth
    ```
 
@@ -134,15 +138,46 @@ Paper reference for train-on-RAF-DB CAFE:
   /kaggle/working/outputs/ckplus48_eval/confusion_matrix.png
   ```
 
+## Paper Dataset Structures from Kaggle Inputs
+
+The added Kaggle inputs use folder-based class labels. All evaluations use CAFE/RAF's 7-class order: `surprise=0`, `fear=1`, `disgust=2`, `happy=3`, `sadness=4`, `anger=5`, `neutral=6`. Any `contempt` folder is skipped because the trained CAFE classifier has no contempt output.
+
+| Dataset | Kaggle structure | Evaluation split | Notes |
+|---|---|---|---|
+| FERPlus | `/kaggle/input/ferplus/{test,train,validation}/{angry,contempt,disgust,fear,happy,neutral,sad,suprise}` | `test` | Folder name `suprise` is mapped to `surprise`; `contempt` is skipped. |
+| AffectNet | `/kaggle/input/affectnet/archive (3)/{Test,Train}/{Anger,Contempt,Disgust,Fear,Happy,Neutral,Sad,Surprise}` plus `labels.csv` | `Test` | The image folders already provide labels; `Contempt` is skipped. |
+| SFEW2.0 | `/kaggle/input/datasetsfew/{Train,Val}/{Angry,Disgust,Fear,Happy,Neutral,Sad,Surprise}` and `/Test/Test_Aligned_Faces` | `Val` | `Test/Test_Aligned_Faces` is unlabeled in the visible structure, so use `Val` for measured accuracy. |
+| MMAFEDB | `/kaggle/input/mma-facial-expression/MMAFEDB/{test,train,valid}/{angry,disgust,fear,happy,neutral,sad,surprise}` | `test` | Direct 7-class folder layout. |
+
+## Evaluate Paper Datasets
+
+Use `code/evaluate_cross_dataset.py` from the `code` directory after RAF-DB training has produced `/kaggle/working/outputs/rafdb_cafe_seed3407/ours_best.pth`:
+
+```bash
+cd /kaggle/working/Generalizable-FER/code
+python evaluate_cross_dataset.py --dataset ferplus --data_path /kaggle/working/data/ferplus --checkpoint ../../outputs/rafdb_cafe_seed3407/ours_best.pth --output_dir ../../outputs/ferplus_eval --batch_size 64 --workers 2 --gpu 0
+python evaluate_cross_dataset.py --dataset affectnet --data_path /kaggle/working/data/affectnet --checkpoint ../../outputs/rafdb_cafe_seed3407/ours_best.pth --output_dir ../../outputs/affectnet_eval --batch_size 64 --workers 2 --gpu 0
+python evaluate_cross_dataset.py --dataset sfew --data_path /kaggle/working/data/sfew --split Val --checkpoint ../../outputs/rafdb_cafe_seed3407/ours_best.pth --output_dir ../../outputs/sfew_val_eval --batch_size 64 --workers 2 --gpu 0
+python evaluate_cross_dataset.py --dataset mma --data_path /kaggle/working/data/mma --checkpoint ../../outputs/rafdb_cafe_seed3407/ours_best.pth --output_dir ../../outputs/mma_eval --batch_size 64 --workers 2 --gpu 0
+```
+
+Each run writes:
+
+```text
+/kaggle/working/outputs/<dataset>_eval/predictions.csv
+/kaggle/working/outputs/<dataset>_eval/metrics.json
+/kaggle/working/outputs/<dataset>_eval/confusion_matrix.png
+```
+
 ## Acceptance Checks for the Report
 
 - Import and CUDA checks pass in Kaggle.
 - RAF-DB label file and aligned images are found through `/kaggle/working/data/raf-basic`.
 - One forward pass returns logits of shape `[batch, 7]`.
 - Training creates `ours_best.pth`, `ours_final.pth`, and `results.txt`.
-- CK+48 evaluation detects the class mode, resizes images to 224x224, and writes CSV/JSON/PNG outputs.
+- CK+48 and paper-dataset evaluation detect the class mode, resize images to 224x224, and write CSV/JSON/PNG outputs.
 - Report chapter 5 states:
   - Kaggle GPU environment, Python/PyTorch/CUDA versions, batch size, epochs.
-  - RAF-DB as source dataset and CK+48 as outside-paper dataset.
-  - RAF-DB paper-vs-run result and CK+48 overall accuracy, Mean Accuracy, macro-F1.
+  - RAF-DB as source dataset; CK+48 as outside-paper dataset; FERPlus, AffectNet, SFEW2.0, and MMAFEDB as paper cross-dataset evaluations.
+  - RAF-DB paper-vs-run result and each evaluation dataset's overall accuracy, Mean Accuracy, macro-F1.
   - Differences caused by Kaggle GPU, batch size if changed, seed, checkpoint availability, CK+48 48x48 upscaling, and neutral/contempt handling.
