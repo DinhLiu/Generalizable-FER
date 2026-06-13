@@ -258,6 +258,31 @@ def main():
     dataset = CKPlus48Dataset(args.ck_path, transform, exclude_neutral=args.exclude_neutral)
     loader = DataLoader(dataset, batch_size=args.batch_size, shuffle=False, num_workers=args.workers)
 
+    # Calculate and display class distribution
+    class_counts = {}
+    for sample in dataset.samples:
+        lbl_name = sample["label_name"]
+        class_counts[lbl_name] = class_counts.get(lbl_name, 0) + 1
+
+    print("\n--- Dataset Class Distribution ---")
+    for name, count in sorted(class_counts.items()):
+        print(f"  {name}: {count}")
+    print(f"Total samples: {len(dataset)}\n")
+
+    # Save class distribution plot
+    Path(args.output_dir).mkdir(parents=True, exist_ok=True)
+    names = sorted(class_counts.keys())
+    counts = [class_counts[n] for n in names]
+    
+    plt.figure(figsize=(8, 5))
+    plt.bar(names, counts, color='skyblue', edgecolor='black')
+    plt.xlabel('Class')
+    plt.ylabel('Count')
+    plt.title(f'Class Distribution - {dataset.mode}')
+    plt.tight_layout()
+    plt.savefig(Path(args.output_dir) / "class_distribution.png", dpi=200)
+    plt.close()
+
     Model, clip_model = import_cafe_model()
     model = Model()
     checkpoint = torch.load(args.checkpoint, map_location=device)
@@ -307,6 +332,7 @@ def main():
         "mean_accuracy": mean_accuracy,
         "macro_f1": float(f1_score(y_true, y_pred, labels=labels, average="macro", zero_division=0)),
         "per_class_accuracy": class_acc,
+        "class_counts": class_counts,
     }
 
     output_dir = Path(args.output_dir)
