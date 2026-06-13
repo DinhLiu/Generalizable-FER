@@ -21,5 +21,14 @@
     "sadness": 0.5357142857142857,
     "anger": 0.08888888888888889,
     "neutral": 0.9173693086003373
+  },
+  "class_counts": {
+    "neutral": 593,
+    "happy": 69,
+    "anger": 45,
+    "disgust": 59,
+    "sadness": 28,
+    "fear": 25,
+    "surprise": 83
   }
 }
