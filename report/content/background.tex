@@ -1,0 +1,89 @@
+\section{Kiến thức nền tảng}
+
+Phần này trình bày các khái niệm cần thiết để người đọc có thể theo dõi chương sách giáo trình, bài báo SOTA và phần thực nghiệm. Nội dung được giới hạn trong phạm vi bài toán nhận dạng cảm xúc khuôn mặt (Facial Expression Recognition - FER), bao gồm cách phát biểu bài toán, cách biểu diễn dữ liệu và đặc trưng, quy trình tổng quát của một hệ thống nhận dạng, khái niệm tổng quát hóa chéo miền và các chỉ số đánh giá được sử dụng xuyên suốt báo cáo.
+
+\subsection{Bài toán nhận dạng mẫu và bài toán FER}
+Nhận dạng mẫu là quá trình ánh xạ một quan sát đầu vào sang một nhãn hoặc một quyết định dựa trên các quy luật học được từ dữ liệu. Một hệ thống nhận dạng mẫu điển hình bao gồm các bước chính: thu nhận dữ liệu, tiền xử lý, trích xuất đặc trưng, học mô hình, suy luận và đánh giá. Tùy mục tiêu, hệ thống có thể được thiết kế cho bài toán phân loại, xác minh, định danh hoặc phát hiện bất thường.
+
+Nhận dạng cảm xúc khuôn mặt là một bài toán \textbf{phân loại} cụ thể trong nhận dạng mẫu. Đầu vào là một ảnh khuôn mặt $x$, đầu ra là một nhãn cảm xúc $y$ thuộc một tập hữu hạn các lớp. Trong phạm vi báo cáo, bài toán được phát biểu trên hệ thống \textbf{bảy lớp cảm xúc cơ bản} ($L = 7$): ngạc nhiên (\textit{surprise}), sợ hãi (\textit{fear}), ghê tởm (\textit{disgust}), hạnh phúc (\textit{happy}), buồn bã (\textit{sadness}), tức giận (\textit{anger}) và trung tính (\textit{neutral}). Hệ thống bảy cảm xúc này bắt nguồn từ lý thuyết tâm lý học về các biểu cảm nguyên mẫu mang tính phổ quát giữa các nền văn hóa, và được cả chương sách giáo trình lẫn bài báo SOTA sử dụng làm mục tiêu phân loại cốt lõi.
+
+\subsection{Biểu diễn dữ liệu và đặc trưng}
+Chất lượng của một hệ thống nhận dạng phụ thuộc lớn vào cách biểu diễn dữ liệu đầu vào thành đặc trưng phân biệt. Trong bài toán FER, có hai hướng biểu diễn chính, phản ánh đúng sự khác biệt giữa phương pháp truyền thống trong chương sách và phương pháp hiện đại trong bài báo SOTA.
+
+\subsubsection{Đặc trưng thủ công}
+Các hệ thống kinh điển dựa trên \textbf{đặc trưng thủ công} (hand-crafted feature), được thiết kế dựa trên tri thức chuyên gia về cấu trúc khuôn mặt. Hai nhóm chính bao gồm:
+\begin{itemize}
+    \item \textbf{Đặc trưng hình học (geometric feature):} mô tả vị trí, hình dạng và khoảng cách giữa các điểm mốc trên khuôn mặt (khóe mắt, lông mày, miệng). Các điểm mốc này thường được định vị bằng mô hình diện mạo chủ động (Active Appearance Model - AAM).
+    \item \textbf{Đặc trưng ngoại hình (appearance feature):} mô tả kết cấu da, nếp nhăn và sự thay đổi cường độ điểm ảnh khi cơ mặt co giãn, thường được trích xuất bằng bộ lọc tần số hoặc luồng quang học.
+\end{itemize}
+Ưu điểm của đặc trưng thủ công là dễ diễn giải và yêu cầu ít dữ liệu huấn luyện. Tuy nhiên, chúng nhạy cảm với sự thay đổi về ánh sáng, góc chụp và sự khác biệt cá nhân, dẫn đến khả năng tổng quát hóa kém trong điều kiện thực tế.
+
+\subsubsection{Đặc trưng học sâu và mô hình ngôn ngữ - hình ảnh}
+Các phương pháp hiện đại thay thế đặc trưng thủ công bằng \textbf{đặc trưng học sâu} (learned feature), được trích xuất tự động bởi mạng nơ-ron tích chập hoặc mạng biến áp thị giác. Đặc biệt, các \textbf{mô hình ngôn ngữ - hình ảnh} (vision-language model) như CLIP được tiền huấn luyện trên hàng triệu cặp ảnh - văn bản từ Internet, cho ra một không gian biểu diễn khuôn mặt có tính tổng quát rất cao. Đặc trưng từ những mô hình nền tảng này bao quát được nhiều điều kiện thu nhận và đặc điểm nhân dạng khác nhau, nên ít bị lệ thuộc vào phân phối của một tập dữ liệu cục bộ. Đây chính là nền tảng kỹ thuật mà phương pháp CAFE trong bài báo SOTA khai thác: thay vì học lại đặc trưng từ đầu, mô hình giữ cố định đặc trưng CLIP và chỉ học một mặt nạ để chọn lọc thông tin biểu cảm.
+
+\subsection{Quy trình tổng quát của hệ thống nhận dạng}
+Một hệ thống nhận dạng cảm xúc khuôn mặt tự động (Automated Facial Expression Analysis - AFEA) điển hình được mô tả bởi các thành phần sau:
+\begin{itemize}
+    \item \textbf{Thu nhận và tiền xử lý:} phát hiện khuôn mặt, căn chỉnh theo điểm mốc, chuẩn hóa kích thước và độ sáng, lọc nhiễu hoặc tăng cường dữ liệu (lật ngang, thêm nhiễu, xóa vùng ngẫu nhiên).
+    \item \textbf{Trích xuất đặc trưng:} biến đổi ảnh khuôn mặt thô thành biểu diễn có khả năng phân biệt cao, bằng descriptor thủ công hoặc mạng học sâu.
+    \item \textbf{Huấn luyện mô hình:} tối ưu tham số dựa trên tập dữ liệu và hàm mục tiêu (thường là hàm mất mát phân loại).
+    \item \textbf{Suy luận:} dự đoán nhãn cảm xúc cho ảnh mới, kèm theo điểm tin cậy.
+    \item \textbf{Đánh giá:} đo lường hiệu quả bằng các chỉ số phù hợp với bài toán phân loại.
+\end{itemize}
+Chương sách giáo trình đặc tả quy trình này thành ba bước cốt lõi: thu thập khuôn mặt, trích xuất và biểu diễn dữ liệu khuôn mặt, và nhận dạng cảm xúc. Phương pháp CAFE trong bài báo SOTA tuân thủ đúng khung ba bước này nhưng hiện đại hóa từng bước bằng công cụ học sâu.
+
+\subsection{Tổng quát hóa chéo miền và bài toán zero-shot}
+Một khái niệm trọng tâm của báo cáo là \textbf{khả năng tổng quát hóa chéo miền} (cross-domain generalization). Trong thực tế, mô hình thường được huấn luyện trên một \textbf{miền dữ liệu nguồn} (source domain) nhưng phải hoạt động trên các \textbf{miền dữ liệu đích} (target domain) có phân phối khác biệt về ánh sáng, độ phân giải, chủng tộc hay quy ước gán nhãn. Sự chênh lệch này được gọi là \textbf{khác biệt miền dữ liệu} (domain gap), và là nguyên nhân chính khiến độ chính xác suy giảm khi triển khai thực tế.
+
+Cần phân biệt hai hướng tiếp cận:
+\begin{itemize}
+    \item \textbf{Thích ứng miền (domain adaptation):} cho phép mô hình tiếp cận trước một số mẫu (có nhãn hoặc chưa) từ miền đích để tinh chỉnh. Hạn chế là điều kiện này thường bất khả thi khi phân phối miền đích không biết trước.
+    \item \textbf{Tổng quát hóa zero-shot (zero-shot generalization):} mô hình chỉ được huấn luyện trên một miền nguồn duy nhất và phải suy luận trực tiếp trên các miền đích chưa từng thấy, tuyệt đối không tinh chỉnh. Đây chính là giao thức đánh giá mà bài báo SOTA và phần thực nghiệm của nhóm áp dụng.
+\end{itemize}
+Một rào cản kỹ thuật liên quan là hiện tượng \textbf{học quá khớp} (overfitting): mô hình ghi nhớ các đặc điểm nhiễu đặc thù của miền nguồn (nền ảnh, danh tính, điều kiện chụp) thay vì học các quy luật biểu cảm phổ quát, dẫn đến mất khả năng tổng quát hóa.
+
+\subsection{Các chỉ số đánh giá}
+
+Các bộ dữ liệu nhận diện biểu cảm khuôn mặt thường có phân bố lớp không đồng đều. Một số cảm xúc có số lượng mẫu lớn hơn đáng kể so với các cảm xúc còn lại. Vì vậy, nếu chỉ sử dụng độ chính xác tổng thể, kết quả có thể bị chi phối bởi các lớp phổ biến và chưa phản ánh đầy đủ khả năng nhận diện các lớp thiểu số. Báo cáo sử dụng bốn công cụ đánh giá sau:
+
+\begin{itemize}
+\item \textbf{Độ chính xác tổng thể (Overall Accuracy -- $\mathrm{OA}$):} là tỷ lệ số mẫu được dự đoán đúng trên tổng số mẫu kiểm thử:
+\[
+\mathrm{OA}
+=
+\frac{\sum_{c=1}^{C} TP_c}{N},
+\]
+trong đó $C$ là số lớp cảm xúc, $TP_c$ là số mẫu thuộc lớp $c$ được dự đoán đúng và $N$ là tổng số mẫu kiểm thử. Chỉ số $\mathrm{OA}$ phản ánh hiệu năng chung của mô hình nhưng có thể cho kết quả cao ngay cả khi mô hình nhận diện kém các lớp ít mẫu.
+
+
+\item \textbf{Độ chính xác trung bình theo lớp (Mean Accuracy -- $\mathrm{MA}$):} là trung bình tỷ lệ dự đoán đúng của từng lớp:
+\[
+    \mathrm{MA}
+    =
+    \frac{1}{C}
+    \sum_{c=1}^{C}
+    \frac{TP_c}{N_c},
+\]
+trong đó $N_c$ là tổng số mẫu thực tế của lớp $c$. Khác với $\mathrm{OA}$, mỗi lớp đóng góp như nhau vào $\mathrm{MA}$, bất kể số lượng mẫu của lớp đó. Vì vậy, chỉ số này phù hợp để đánh giá khả năng nhận diện đồng đều giữa các cảm xúc trong dữ liệu mất cân bằng.
+
+\item \textbf{Macro-F1:} là trung bình điểm F1 của tất cả các lớp:
+\[
+    \mathrm{Macro\text{-}F1}
+    =
+    \frac{1}{C}
+    \sum_{c=1}^{C} F1_c,
+\]
+với
+\[
+    F1_c
+    =
+    \frac{2\,\mathrm{Precision}_c\,\mathrm{Recall}_c}
+    {\mathrm{Precision}_c+\mathrm{Recall}_c}.
+\]
+Trong đó, $\mathrm{Precision}_c$ cho biết trong các mẫu được dự đoán là lớp $c$, có bao nhiêu mẫu thực sự thuộc lớp đó; $\mathrm{Recall}_c$ cho biết trong các mẫu thực tế thuộc lớp $c$, mô hình nhận diện đúng được bao nhiêu mẫu. Macro-F1 đánh giá đồng thời lỗi dự đoán nhầm và lỗi bỏ sót trên từng lớp.
+
+\item \textbf{Ma trận nhầm lẫn (Confusion Matrix):} biểu diễn số lượng mẫu của mỗi lớp thực tế được dự đoán vào từng lớp đầu ra. Các phần tử trên đường chéo thể hiện số mẫu được phân loại đúng, trong khi các phần tử ngoài đường chéo thể hiện các trường hợp nhầm lẫn. Ma trận này giúp xác định cụ thể những cặp cảm xúc mà mô hình khó phân biệt, chẳng hạn \textit{fear} và \textit{surprise}, hoặc \textit{sadness} và \textit{neutral}.
+
+\end{itemize}
+
+Trong báo cáo, $\mathrm{OA}$ được sử dụng để so sánh trực tiếp với kết quả được công bố trong bài báo gốc. $\mathrm{MA}$ và Macro-F1 được dùng để đánh giá mức độ cân bằng của mô hình giữa các lớp cảm xúc, còn ma trận nhầm lẫn được dùng để phân tích chi tiết các dạng lỗi dự đoán.

@@ -1,0 +1,86 @@
+\section{Nghiên cứu chương sách giáo trình}
+
+\subsection{Thông tin chương sách được chọn}
+\begin{itemize}
+    \item \textbf{Tên sách:} \textit{Handbook of Face Recognition}, 2nd Edition, do Stan Z. Li và Anil K. Jain chủ biên, Nhà xuất bản Springer, năm 2011 \cite{li2011handbook}.
+    \item \textbf{Tên chương:} Chương 19 - \textit{Facial Expression Recognition}.
+    \item \textbf{Tác giả chương:} Yingli Tian (The City College of New York), Takeo Kanade (Carnegie Mellon University) và Jeffrey F. Cohn (University of Pittsburgh).
+    \item \textbf{Chủ đề chính:} Trình bày nền tảng và quy trình của một hệ thống phân tích biểu cảm khuôn mặt tự động (Automated Facial Expression Analysis - AFEA), bao gồm cấu trúc ba bước, không gian bài toán, các kỹ thuật trích xuất đặc trưng và nhận dạng biểu cảm.
+    \item \textbf{Lý do lựa chọn:} Chương sách cung cấp khung lý thuyết kinh điển và toàn diện nhất về AFEA, định nghĩa rõ các thành phần, thuật ngữ và rào cản cốt lõi của lĩnh vực. Đây là hệ quy chiếu lý tưởng để đối sánh với bài báo SOTA hiện đại (phương pháp CAFE), qua đó làm rõ bước tiến hóa từ đặc trưng thủ công sang đặc trưng học sâu.
+\end{itemize}
+
+\subsection{Bài toán và giả định trong chương sách}
+Chương sách định nghĩa \textbf{phân tích biểu cảm khuôn mặt} là các hệ thống máy tính cố gắng tự động phân tích và nhận dạng các chuyển động cơ mặt cùng sự thay đổi đặc trưng khuôn mặt từ thông tin thị giác. Các tác giả nhấn mạnh cần phân biệt giữa \textit{phân tích biểu cảm} (facial expression analysis) và \textit{phân tích cảm xúc} (emotion analysis): cảm xúc đòi hỏi tri thức ở mức cao hơn, vì một biểu cảm khuôn mặt ngoài việc truyền tải cảm xúc còn có thể thể hiện ý định, quá trình nhận thức, nỗ lực thể chất hoặc các thông điệp xã hội khác; việc diễn giải còn phụ thuộc vào ngữ cảnh, cử chỉ cơ thể, giọng nói, sự khác biệt cá nhân và yếu tố văn hóa. Do đó, hệ thống AFEA chỉ tập trung phân tích bản thân các hành động cơ mặt, bất chấp ngữ cảnh, văn hóa hay giới tính.
+
+Về cấu trúc bài toán, đầu vào là ảnh tĩnh hoặc chuỗi video chứa khuôn mặt, đầu ra là các hành động cơ mặt (action unit) hoặc các biểu cảm cảm xúc nguyên mẫu. Chương sách nêu một số \textbf{giả định đơn giản hóa} phổ biến trong các hệ thống đương thời: phần lớn chỉ xử lý khuôn mặt ở góc nhìn chính diện hoặc gần chính diện; nhiều hệ thống giả định khung hình đầu tiên của chuỗi là khuôn mặt chính diện và có biểu cảm trung tính để dùng làm ảnh tham chiếu; và thường giả định biểu cảm là đơn lẻ, bắt đầu và kết thúc ở trạng thái trung tính. Chương sách cũng chỉ rõ những giả định này thường không đúng trong thực tế, mở ra các hướng nghiên cứu nâng cao độ bền vững.
+
+Ứng dụng của AFEA rất rộng: giao tiếp phi ngôn ngữ và cận ngôn ngữ, tâm lý học lâm sàng, tâm thần học, thần kinh học, đánh giá mức độ đau, phát hiện nói dối, môi trường thông minh và giao diện người - máy đa phương thức.
+
+\subsection{Cấu trúc tổng quát của hệ thống AFEA}
+Theo chương sách, một hệ thống phân tích biểu cảm khuôn mặt tự động bao gồm ba bước cốt lõi:
+\begin{enumerate}
+    \item \textbf{Thu thập khuôn mặt (Face acquisition):} Tự động xác định vùng khuôn mặt trong ảnh hoặc chuỗi video. Có thể dùng bộ phát hiện khuôn mặt cho từng khung hình, hoặc chỉ phát hiện ở khung đầu rồi theo vết ở các khung sau. Để xử lý chuyển động đầu lớn, có thể bổ sung bước phát hiện đầu, theo vết đầu và ước lượng tư thế.
+    \item \textbf{Trích xuất và biểu diễn dữ liệu khuôn mặt (Facial data extraction and representation):} Trích xuất các thay đổi do biểu cảm gây ra theo hai hướng chính là đặc trưng hình học và đặc trưng ngoại hình. Trước khi trích xuất, ảnh thường được căn chỉnh và chuẩn hóa nhằm loại bỏ ảnh hưởng của xoay trong mặt phẳng và khác biệt tỷ lệ.
+    \item \textbf{Nhận dạng biểu cảm khuôn mặt (Facial expression recognition):} Phân loại các thay đổi cơ mặt thành các đơn vị hành động cơ mặt hoặc các biểu cảm cảm xúc nguyên mẫu. Tùy việc có sử dụng thông tin thời gian hay không, phương pháp được chia thành dựa trên khung hình (frame-based) và dựa trên chuỗi (sequence-based).
+\end{enumerate}
+
+\subsection{Không gian bài toán của phân tích biểu cảm}
+Một đóng góp quan trọng của chương sách là phân tích \textbf{không gian bài toán} (problem space) gồm nhiều chiều khác nhau mà một hệ thống lý tưởng phải xử lý. Phần lớn nghiên cứu đương thời mới chỉ giới hạn trong một vùng hẹp của không gian này:
+\begin{itemize}
+    \item \textbf{Mức độ mô tả:} Lựa chọn giữa nhận dạng một tập nhỏ các biểu cảm nguyên mẫu (ghê tởm, sợ hãi, vui, ngạc nhiên, buồn, giận) và nhận dạng các đơn vị hành động cơ mặt tinh vi theo hệ FACS.
+    \item \textbf{Sự khác biệt cá nhân:} Hình dạng, kết cấu da, màu sắc, râu tóc thay đổi theo giới tính, chủng tộc và độ tuổi; kính mắt, trang sức có thể che khuất đặc trưng. Ngoài ra còn có khác biệt về độ biểu cảm giữa các cá nhân.
+    \item \textbf{Sự chuyển tiếp giữa các biểu cảm:} Biểu cảm thực tế không đơn lẻ; các đơn vị hành động có thể xuất hiện theo tổ hợp cộng tính (additive) hoặc phi cộng tính (non-additive, hiệu ứng đồng phát âm).
+    \item \textbf{Cường độ biểu cảm:} Hành động cơ mặt biến thiên về cường độ, được FACS đo bằng thang 3 hoặc 5 mức.
+    \item \textbf{Biểu cảm chủ ý và tự phát:} Hai loại được điều khiển bởi hai đường vận động thần kinh khác nhau, khác biệt về thời gian và tính đối xứng, ảnh hưởng lớn đến các mô hình phụ thuộc thời gian như HMM.
+    \item \textbf{Hướng đầu và độ phức tạp bối cảnh:} Xoay đầu ngoài mặt phẳng và sự xuất hiện của nhiều người, nền phức tạp đều làm khó việc phân tích.
+    \item \textbf{Thu nhận ảnh và độ phân giải:} Ánh sáng, loại camera và độ phân giải ảnh hưởng tới kết quả; biểu cảm có thể nhận dạng được ở mức $48 \times 64$ điểm ảnh nhưng không nhận được ở $24 \times 32$.
+    \item \textbf{Độ tin cậy của nhãn thực tế:} Dữ liệu cần được gán nhãn thủ công và kiểm tra độ tin cậy liên quan sát viên, ưu tiên hệ số kappa thay vì tỷ lệ đồng thuận thô.
+    \item \textbf{Bộ dữ liệu và quan hệ với các kênh hành vi khác:} Việc dùng các bộ dữ liệu nhỏ, đồng nhất khiến khả năng tổng quát hóa chưa được kiểm chứng; biểu cảm cũng chỉ là một trong nhiều kênh giao tiếp phi ngôn ngữ.
+\end{itemize}
+Chương sách tổng hợp các tiêu chí của một hệ thống AFEA lý tưởng theo bốn nhóm: tính bền vững (xử lý đa dạng đối tượng, ánh sáng, chuyển động đầu, che khuất, độ phân giải, mọi biểu cảm với cường độ và tính bất đối xứng khác nhau, biểu cảm tự phát), tính tự động hóa, tính thời gian thực và tính tự chủ (đưa ra kết quả kèm độ tin cậy, thích ứng theo chất lượng ảnh đầu vào).
+
+\subsection{Kỹ thuật và phương pháp cốt lõi}
+
+\subsubsection{Hệ thống mã hóa hành động khuôn mặt FACS}
+Hệ thống mã hóa hành động khuôn mặt (Facial Action Coding System - FACS) do Ekman và Friesen đề xuất là một hệ thống dựa trên quan sát viên con người, được thiết kế để phát hiện các thay đổi tinh vi của cơ mặt. FACS gồm 44 đơn vị hành động (action unit - AU), trong đó 30 đơn vị liên quan trực tiếp đến sự co của một nhóm cơ mặt cụ thể. Các AU có thể xuất hiện riêng lẻ hoặc theo tổ hợp (đã quan sát được hơn 7000 tổ hợp khác nhau), được mã hóa đối xứng hoặc bất đối xứng, và đo cường độ bằng thang 5 mức. Bản thân FACS chỉ mang tính mô tả, không gắn nhãn cảm xúc; muốn suy ra cảm xúc cần chuyển sang các hệ thống như EMFACS.
+
+\subsubsection{Trích xuất đặc trưng hình học}
+Đặc trưng hình học (geometric feature) biểu diễn hình dạng và vị trí của các thành phần khuôn mặt (miệng, mắt, lông mày, mũi). Tian và cộng sự xây dựng các \textbf{mô hình đa trạng thái} (multi-state models) để theo vết: mô hình ba trạng thái cho môi (mở, đóng, mím chặt), mô hình hai trạng thái (mở/đóng) cho mỗi mắt, mô hình một trạng thái cho lông mày và má. Các tham số được tính theo tỷ lệ so với khung tham chiếu nhằm loại bỏ ảnh hưởng của chuyển động và tỷ lệ. Mô hình diện mạo chủ động (Active Appearance Model - AAM) và mô hình khung dây 3D cũng được dùng để giảm thao tác thủ công và xử lý chuyển động đầu lớn.
+
+\subsubsection{Trích xuất đặc trưng ngoại hình}
+Đặc trưng ngoại hình (appearance feature) biểu diễn thay đổi kết cấu da như nếp nhăn, rãnh mũi-má. \textbf{Sóng con Gabor} (Gabor wavelets) được dùng rộng rãi để trích xuất các hệ số đa tỷ lệ, đa hướng, áp dụng cho các vị trí cụ thể hoặc toàn bộ ảnh khuôn mặt. Chương sách dẫn nhiều nghiên cứu cho thấy đặc trưng Gabor và phân tích thành phần độc lập cho kết quả tốt; tuy nhiên Gabor đơn thuần kém hiệu quả khi đối tượng không đồng nhất hoặc có chuyển động đầu. Kết quả thực nghiệm cho thấy \textbf{kết hợp cả đặc trưng hình học và ngoại hình} (đặc trưng lai) giúp cải thiện hiệu suất nhận dạng cho hầu hết các AU.
+
+\subsection{Quy trình hoạt động chi tiết}
+
+\subsubsection{Tiền xử lý và thu thập khuôn mặt}
+Phần lớn hệ thống chỉ xử lý khuôn mặt chính diện hoặc gần chính diện. Để phát hiện khuôn mặt, chương sách dẫn các phương pháp kinh điển như mạng nơ-ron của Rowley, phương pháp thống kê của Schneiderman--Kanade và bộ phát hiện thời gian thực của Viola--Jones dựa trên các đặc trưng chữ nhật. Để xử lý chuyển động đầu ngoài mặt phẳng, hệ thống dùng ước lượng tư thế đầu theo hai nhóm: phương pháp dựa trên mô hình 3D (ví dụ mô hình đầu hình trụ ước lượng 6 bậc tự do theo thời gian thực, kết hợp AAM và cơ chế tái đăng ký để chống tích lũy sai số) và phương pháp dựa trên ảnh 2D (ví dụ dùng mạng nơ-ron phân loại tư thế thành ba lớp: chính diện/gần chính diện, nghiêng/nhìn nghiêng, và các trường hợp khác). Quá trình phân tích biểu cảm chỉ áp dụng cho khuôn mặt chính diện và gần chính diện.
+
+\subsubsection{Trích xuất đặc trưng}
+Sau khi định vị khuôn mặt, hệ thống trích xuất đặc trưng hình học, đặc trưng ngoại hình hoặc đặc trưng lai như đã trình bày. Để loại bỏ ảnh hưởng của tỷ lệ, chuyển động và ánh sáng, ảnh được căn chỉnh và chuẩn hóa về một khuôn mặt chuẩn (2D hoặc 3D), sau đó đo đặc trưng tương đối so với ảnh tham chiếu là khuôn mặt trung tính.
+
+\subsubsection{So khớp, phân loại hoặc nhận dạng}
+Bước cuối nhận dạng biểu cảm dựa trên đặc trưng đã trích xuất. Nhiều bộ phân loại được áp dụng: mạng nơ-ron (NN), máy học vector hỗ trợ (SVM), phân tích biệt thức tuyến tính (LDA), K-láng giềng gần nhất, hồi quy logistic đa thức (MLR), mô hình Markov ẩn (HMM), mạng Bayes mở rộng cây (TAN), RankBoost và các bộ phân loại dựa trên luật. Hai hướng chính:
+\begin{itemize}
+    \item \textbf{Dựa trên khung hình:} Chỉ dùng thông tin của ảnh hiện tại (có hoặc không có khung tham chiếu). Ví dụ Tian và cộng sự dùng mạng nơ-ron ba lớp đạt độ chính xác $95.5\%$ cho 16 AU và tổ hợp; hệ thống SVM kết hợp MLR đạt $91.5\%$ cho sáu biểu cảm cơ bản.
+    \item \textbf{Dựa trên chuỗi:} Khai thác thông tin thời gian của chuỗi bằng HMM, mạng nơ-ron hồi quy hoặc bộ phân loại dựa trên luật. Các hệ thống này phù hợp để nhận dạng AU trong hành vi tự phát, nơi đối tượng đa dạng và có chuyển động đầu, che khuất.
+\end{itemize}
+
+\subsection{Phân tích đa phương thức và bộ dữ liệu}
+Chương sách nhấn mạnh biểu cảm khuôn mặt chỉ là một trong nhiều kênh giao tiếp phi ngôn ngữ, do đó việc tích hợp với cử chỉ, ngữ điệu và lời nói là một hướng quan trọng. Ví dụ, kết hợp đặc trưng khuôn mặt với cử chỉ cơ thể trên bộ dữ liệu FABO nâng độ chính xác lên $85\%$, cao hơn so với chỉ dùng riêng khuôn mặt hoặc cơ thể. Về dữ liệu, chương sách tổng hợp các bộ chuẩn thường dùng như Cohn--Kanade (bộ dữ liệu được sử dụng phổ biến nhất, gán nhãn FACS), JAFFE, MMI, RU-FACS (biểu cảm tự phát), FABO (mặt và cử chỉ cơ thể), cùng các bộ 3D/4D là BU-3DFE và BU-4DFE.
+
+\subsection{Các câu hỏi mở}
+Chương sách kết lại bằng bảy câu hỏi mở định hình hướng nghiên cứu tương lai: (1) con người nhận dạng biểu cảm như thế nào; (2) có phải phân tích càng chi tiết càng tốt; (3) có cách mã hóa biểu cảm nào tốt hơn cho máy tính; (4) làm sao thu được nhãn thực tế tin cậy; (5) làm sao nhận dạng biểu cảm trong đời sống thực với chuyển động đầu, ảnh độ phân giải thấp, thiếu khuôn mặt trung tính và biểu cảm cường độ thấp; (6) khai thác thông tin thời gian ra sao; (7) tích hợp với các phương thức khác như thế nào. Trong đó, câu hỏi về \textbf{khả năng tổng quát hóa trong môi trường thực} chính là vấn đề mà bài báo SOTA hiện đại trực tiếp giải quyết.
+
+\subsection{Ưu điểm và hạn chế từ góc nhìn giáo trình}
+\textbf{Ưu điểm:}
+\begin{itemize}
+    \item Cung cấp khung khái niệm chặt chẽ và toàn diện (cấu trúc ba bước AFEA, không gian bài toán nhiều chiều, tiêu chí hệ thống lý tưởng), đặt nền móng thuật ngữ cho cả lĩnh vực.
+    \item Hệ thống FACS và các đơn vị hành động cho phép mô tả biểu cảm ở mức tinh vi, có cơ sở giải phẫu rõ ràng và khả năng diễn giải cao.
+    \item Đặc trưng thủ công (hình học, ngoại hình) dễ diễn giải, yêu cầu ít dữ liệu huấn luyện; đặc trưng lai cho kết quả tốt trong điều kiện kiểm soát.
+\end{itemize}
+\textbf{Hạn chế:}
+\begin{itemize}
+    \item Phụ thuộc nhiều vào đặc trưng thủ công và bước căn chỉnh, nhạy cảm với ánh sáng, tư thế, độ phân giải và sự khác biệt cá nhân.
+    \item Phần lớn hệ thống giả định khuôn mặt chính diện, có khung trung tính tham chiếu và biểu cảm chủ ý; khó áp dụng cho biểu cảm tự phát trong thế giới thực.
+    \item Sử dụng các bộ dữ liệu nhỏ, đồng nhất khiến \textbf{khả năng tổng quát hóa chéo miền chưa được giải quyết} - đây chính là rào cản mở mà các phương pháp học sâu hiện đại như CAFE kế thừa và khắc phục.
+\end{itemize}
