@@ -187,7 +187,74 @@ MMAFEDB test & 17356 & 56.72 & 42.95 & 43.17 \\
 \end{tabular}
 \end{table}
 
-Kết quả theo từng lớp cho thấy mô hình nhận dạng tốt nhất các biểu cảm có dấu hiệu hình học rõ ràng. Trên CK+48, lớp \textit{happy} đạt 100\%, \textit{surprise} đạt 95.18\% và \textit{neutral} đạt 91.74\%. Trên FERPlus, lớp \textit{happy} đạt 94.51\%, trong khi \textit{surprise} và \textit{sadness} lần lượt đạt 68.22\% và 67.93\%. Ngược lại, các lớp \textit{fear}, \textit{disgust} và \textit{anger} thường có độ chính xác thấp hơn, đặc biệt \textit{fear} đạt 0\% trên CK+48 và SFEW2.0. Điều này phù hợp với ma trận nhầm lẫn thu được: các cảm xúc có biểu hiện thị giác gần nhau hoặc có ít mẫu dễ bị dự đoán nhầm sang \textit{happy}, \textit{sadness} hoặc \textit{neutral}.
+Bảng~\ref{tab:per_class_acc} trình bày độ chính xác theo từng lớp cảm xúc trên tất cả các tập dữ liệu đánh giá. Kết quả cho thấy mô hình nhận dạng tốt nhất các biểu cảm có dấu hiệu hình học rõ ràng: \textit{happy} luôn đạt trên 75\% trên mọi tập, \textit{surprise} và \textit{neutral} cũng đạt mức cao. Ngược lại, \textit{fear} hoàn toàn thất bại với 0\% trên CK+48 (cả hai chế độ) và SFEW2.0, chỉ đạt 4.4\% trên AffectNet và 8.2\% trên MMAFEDB --- đây là lớp yếu nhất xuyên suốt mọi tập. \textit{Disgust} cũng có kết quả thấp đồng đều (4.3\%--28.6\%), phản ánh sự khan hiếm mẫu và độ khó phân biệt cao của hai cảm xúc này.
+
+\begin{table}[htbp]
+\centering
+\caption{Độ chính xác theo từng lớp cảm xúc (\%) trên các tập đánh giá chéo miền}
+\label{tab:per_class_acc}
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{lrrrrrrr}
+\hline
+\textbf{Tập dữ liệu} & \textbf{Surprise} & \textbf{Fear} & \textbf{Disgust} & \textbf{Happy} & \textbf{Sadness} & \textbf{Anger} & \textbf{Neutral} \\
+\hline
+CK+48 7cls      & 95.18 & 0.00  & 55.93 & 100.00 & 53.57 &  8.89 & 91.74 \\
+CK+48 6cls peak & 95.18 & 0.00  & 55.93 & 100.00 & 53.57 &  8.89 & --- \\
+FERPlus         & 68.22 & 31.63 & 28.57 &  94.51 & 67.93 & 49.38 & 53.45 \\
+AffectNet       & 61.67 &  4.39 & 18.51 &  83.43 & 60.04 & 31.66 & 68.83 \\
+SFEW2.0         & 12.50 &  0.00 &  4.35 &  86.11 & 68.49 & 28.57 & 71.43 \\
+MMAFEDB         & 56.00 &  8.25 & 17.25 &  75.87 & 45.11 & 42.07 & 56.09 \\
+\hline
+\end{tabular}
+\end{table}
+
+Hình~\ref{fig:cm_all} trình bày ma trận nhầm lẫn trên sáu tập đánh giá, cho phép quan sát trực tiếp các pattern lỗi đặc trưng của mô hình CAFE khi hoạt động trong điều kiện zero-shot cross-domain.
+
+\begin{figure}[htbp]
+    \centering
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/cm_ferplus.png}
+        \caption*{(a) FERPlus (3543 mẫu)}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/cm_affectnet.png}
+        \caption*{(b) AffectNet (13206 mẫu)}
+    \end{minipage}
+
+    \vspace{0.5em}
+
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/cm_sfew.png}
+        \caption*{(c) SFEW2.0 Val (431 mẫu)}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/cm_mma.png}
+        \caption*{(d) MMAFEDB (17356 mẫu)}
+    \end{minipage}
+
+    \vspace{0.5em}
+
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/cm_ckplus48_7cls.png}
+        \caption*{(e) CK+48 7 lớp có Neutral (902 mẫu)}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/cm_ckplus48_peak.png}
+        \caption*{(f) CK+48 6 lớp peak-only (309 mẫu)}
+    \end{minipage}
+
+    \caption{Ma trận nhầm lẫn của mô hình CAFE trên sáu tập đánh giá chéo miền (huấn luyện trên RAF-DB, không tinh chỉnh trên miền đích). Trục dọc là nhãn thực tế (Ground truth), trục ngang là nhãn dự đoán (Predicted).}
+    \label{fig:cm_all}
+\end{figure}
 
 
 \subsection{Phân tích sai khác và thảo luận}
@@ -195,11 +262,13 @@ Kết quả theo từng lớp cho thấy mô hình nhận dạng tốt nhất c�
 
 Sai khác giữa kết quả của nhóm và bài báo gốc đến từ nhiều nguyên nhân. Trước hết, mặc dù nhóm sử dụng cùng ý tưởng huấn luyện trên RAF-DB và đánh giá chéo miền, môi trường chạy lại không hoàn toàn trùng khớp với thiết lập gốc của tác giả. Các yếu tố như phiên bản thư viện, GPU, cách tải checkpoint CLIP, seed, batch size và chiến lược đọc dữ liệu đều có thể tạo sai khác nhỏ trong quá trình tối ưu.
 
-Thứ hai, các bộ dữ liệu được lấy từ nguồn Kaggle có cấu trúc thư mục và quy ước nhãn không đồng nhất. FERPlus có thư mục \textit{contempt} bị loại bỏ; AffectNet cũng bỏ lớp \textit{Contempt}; SFEW2.0 sử dụng tập Val vì tập Test không có nhãn trong cấu trúc dữ liệu hiện có. Những điều chỉnh này cần thiết để ánh xạ về bảy lớp của CAFE, nhưng đồng thời làm giao thức đánh giá khác một phần so với bài báo.
+Thứ hai, các bộ dữ liệu được lấy từ nguồn Kaggle có cấu trúc thư mục và quy ước nhãn không đồng nhất. FERPlus có thư mục \textit{contempt} bị loại bỏ; AffectNet cũng bỏ lớp \textit{Contempt}; SFEW2.0 sử dụng tập Val vì tập Test không có nhãn trong cấu trúc dữ liệu hiện có. Những điều chỉnh này cần thiết để ánh xạ về bảy lớp của CAFE, nhưng đồng thời làm giao thức đánh giá khác một phần so với bài báo. Riêng hai tập FERPlus và SFEW2.0, sự kết hợp của các yếu tố này dẫn đến chênh lệch lần lượt $-6.35\%$ và $-5.99\%$ so với kết quả bài báo gốc --- đây là những trường hợp tái hiện không đạt đầy đủ cần được ghi nhận rõ.
 
-Thứ ba, CK+48 là một trường hợp mở rộng ngoài các tập chính trong bài báo. Ảnh CK+48 có độ phân giải 48 $\times$ 48, sau đó được phóng lên $224 \times 224$ để phù hợp với đầu vào của mô hình. Quá trình phóng đại này không tạo thêm chi tiết khuôn mặt mới, nên các đặc trưng vi mô của những cảm xúc khó như \textit{fear} hoặc \textit{anger} có thể bị mất hoặc không đủ rõ. Điều này lý giải vì sao độ chính xác tổng thể của CK+48 có neutral khá cao, nhưng Mean Accuracy và Macro-F1 thấp hơn nhiều: mô hình làm tốt ở các lớp dễ và đông mẫu, nhưng yếu ở các lớp khó.
+Thứ ba, CK+48 là một trường hợp mở rộng ngoài các tập chính trong bài báo. Ảnh CK+48 có độ phân giải 48 $\times$ 48, sau đó được phóng lên $224 \times 224$ để phù hợp với đầu vào của mô hình. Quá trình phóng đại này không tạo thêm chi tiết khuôn mặt mới, nên các đặc trưng vi mô của những cảm xúc khó như \textit{fear} hoặc \textit{anger} có thể bị mất hoặc không đủ rõ. Quan sát ma trận nhầm lẫn tại Hình~\ref{fig:cm_all}(e)-(f), toàn bộ 25 mẫu \textit{fear} bị phân tán sang các lớp khác (chủ yếu \textit{sadness} và \textit{happy}), xác nhận mô hình không có khả năng nhận diện \textit{fear} trong điều kiện ảnh phóng đại từ độ phân giải thấp.
 
-Thứ tư, phân phối lớp giữa các bộ dữ liệu mất cân bằng rõ rệt. Minh chứng rõ nét nhất là ở bộ dữ liệu mở rộng CK+48 đã được nhóm phân tích trực quan qua biểu đồ phân phối mẫu tại Hình~\ref{fig:ckplus_distribution} (Mục 5.3 / 5.4). Sự mất cân bằng cực đoan này giải thích lý do vì sao ở chế độ 7 lớp, Overall Accuracy đạt mức rất cao ($82.48\%$), nhưng Mean Accuracy và Macro-F1 lại thấp hơn nhiều ($57.90\%$ và $53.73\%$), do mô hình nhận diện tốt lớp chiếm đa số (\textit{neutral}, \textit{happy}) nhưng đoán sai các lớp ít mẫu như \textit{fear} hay \textit{anger}. Khi chuyển sang chế độ 6 lớp peak-only, việc loại bỏ hoàn toàn lớp \textit{neutral} giúp phản ánh thực chất và công bằng hơn năng lực nhận dạng cảm xúc thực tế của mô hình.
+Thứ tư, phân phối lớp giữa các bộ dữ liệu mất cân bằng rõ rệt. Minh chứng rõ nét nhất là ở bộ dữ liệu mở rộng CK+48 đã được nhóm phân tích trực quan qua biểu đồ phân phối mẫu tại Hình~\ref{fig:ckplus_distribution}. Sự mất cân bằng cực đoan này giải thích lý do vì sao ở chế độ 7 lớp, Overall Accuracy đạt mức rất cao ($82.48\%$), nhưng Mean Accuracy và Macro-F1 lại thấp hơn nhiều ($57.90\%$ và $53.73\%$), do mô hình nhận diện tốt lớp chiếm đa số (\textit{neutral}, \textit{happy}) nhưng đoán sai các lớp ít mẫu như \textit{fear} hay \textit{anger}. Khi chuyển sang chế độ 6 lớp peak-only, việc loại bỏ hoàn toàn lớp \textit{neutral} giúp phản ánh thực chất và công bằng hơn năng lực nhận dạng cảm xúc thực tế của mô hình.
+
+Thứ năm, nhìn vào các ma trận nhầm lẫn trong Hình~\ref{fig:cm_all}, có thể rút ra hai pattern lỗi hệ thống của mô hình CAFE. \textbf{Pattern thứ nhất} là sự hút về trung tâm của \textit{happy} và \textit{neutral}: trên SFEW2.0, phần lớn mẫu \textit{surprise} (19/56), \textit{fear} (10/46) và \textit{disgust} (5/23) đều bị dự đoán nhầm sang \textit{sadness} hoặc \textit{neutral}, cho thấy mô hình bị thiên hướng về các lớp đông mẫu trong tập huấn luyện RAF-DB. \textbf{Pattern thứ hai} là sự nhầm lẫn giữa \textit{anger} và \textit{disgust}: trên CK+48, 28/45 mẫu \textit{anger} bị phân loại thành \textit{disgust} do hai biểu cảm này có nhiều điểm tương đồng về chuyển động cơ vùng miệng và lông mày.
 
 Từ các kết quả trên, có thể nhận xét rằng CAFE giữ được năng lực tổng quát hóa tương đối tốt khi chuyển từ RAF-DB sang các bộ dữ liệu ngoài miền. Tuy nhiên, mô hình vẫn chưa giải quyết triệt để các lớp cảm xúc mơ hồ, các bộ dữ liệu có ảnh chất lượng thấp hoặc các trường hợp phân phối lớp lệch mạnh. Do đó, trong báo cáo này, Overall Accuracy được dùng để so sánh với bài báo gốc, còn Mean Accuracy và Macro-F1 được dùng để phân tích sâu hơn về tính cân bằng của mô hình.
 \subsection{Mở rộng hoặc cải tiến}
